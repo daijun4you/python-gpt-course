@@ -11,6 +11,7 @@ contextMessages = [
 
 def run():
     openai.api_key = conf.get("api_key")
+
     chat_completion = openai.ChatCompletion.create(
         # 选择的GPT模型
         model="gpt-3.5-turbo-16k-0613",
@@ -24,10 +25,10 @@ def run():
         n=2,
     )
 
-    # 将答复存储到上下文中，否则下次再进行对话时，GPT会遗忘之前的答复
-    contextMessages.append(chat_completion.choices[0].message)
-
     # 第一个答复
     print(chat_completion.choices[0].message.content)
     # 第二个答复，上边的n>=2时，才会有该条回复
     print(chat_completion.choices[1].message.content)
+
+    # 将答复存储到上下文中，否则下次再进行对话时，GPT会遗忘之前的答复
+    contextMessages.append(chat_completion.choices[0].message)
