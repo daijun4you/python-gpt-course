@@ -9,5 +9,5 @@ setup(
     long_description=open("README.md").read(),
     url="https://github.com/daijun4you/python-gpt-course",
     packages=find_packages(),
-    requires=">=3.6"
+    requires=">=3.10"
 )

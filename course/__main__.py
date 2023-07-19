@@ -1,11 +1,13 @@
 import sys
-import os
-
-from openai_api import test
+import importlib
 
 
 def main():
-    test.main()
+    if len(sys.argv) < 3:
+        return
+
+    module = importlib.import_module(sys.argv[1] + "." + sys.argv[2])
+    module.main()
 
 
 if __name__ == "__main__":
