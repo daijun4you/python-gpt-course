@@ -7,7 +7,7 @@ def main():
         return
 
     module = importlib.import_module(sys.argv[1] + "." + sys.argv[2])
-    module.main()
+    module.run()
 
 
 if __name__ == "__main__":
