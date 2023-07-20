@@ -27,7 +27,7 @@ def run():
 
         print("\r请稍等..", end="", flush=True)
 
-        # 请求GPT，并打印返回信息
+        # 请求GPT，并打印返回信息，这里GPT返回的是JSON格式数据，在你的真实场景里，可以做定制化处理
         print("\r" + reqGPTAndSaveContext(), flush=True)
 
 
