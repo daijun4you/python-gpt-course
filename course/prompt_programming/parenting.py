@@ -11,19 +11,26 @@ contextMessages = [
 def run():
     openai.api_key = conf.get("api_key")
 
-    print(reqGPTAndSaveContext())
+    print("\r系统初始化中，请稍等..", end="", flush=True)
+
+    print("\r育儿师：" + reqGPTAndSaveContext(), flush=True)
 
     while True:
-        user_input = input()
+        # 监听用户信息
+        user_input = input("用户：")
+        if user_input == "":
+            continue
 
+        # 将用户输入放入上下文
         contextMessages.append({
             "role": "user",
             "content": user_input
         })
 
-        print("\rGPT思考中，请稍等..", flush=True)
+        print("\r育儿师思考中，请稍等..", end="", flush=True)
 
-        print("\r" + reqGPTAndSaveContext(), flush=True)
+        # 请求GPT，并打印返回信息
+        print("\r育儿师：" + reqGPTAndSaveContext(), flush=True)
 
 
 def reqGPTAndSaveContext():
