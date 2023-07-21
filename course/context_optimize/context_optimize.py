@@ -1,3 +1,8 @@
+# contextMessages = [
+#     {"role": "system", "content": "你是一个资深的心理咨询师"},
+#     {"role": "user", "content": "我觉得GPT很酷！"}
+# ]
+
 cleanUpDataMoreThan = 1024 * 4
 
 
