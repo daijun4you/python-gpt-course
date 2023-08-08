@@ -4,7 +4,6 @@ from langchain.embeddings.openai import OpenAIEmbeddings
 from langchain.vectorstores import Chroma
 from langchain.chains import RetrievalQA
 from langchain.chat_models import ChatOpenAI
-from langchain.callbacks import get_openai_callback
 from configs import conf
 import os
 
