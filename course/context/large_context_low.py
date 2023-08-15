@@ -1,5 +1,6 @@
 import openai
 from configs import conf
+import os
 
 
 def run():
@@ -7,9 +8,10 @@ def run():
     section_size = 1000
     result = ""
 
-    sections = split_file_to_sections("xxxxx", section_size)
-    for seg in sections:
-        result += section_analysis(seg, section_size) + "\n"
+    sections = split_file_to_sections(os.path.dirname(
+        os.path.abspath(__file__)) + "/txt", section_size)
+    for section in sections:
+        result += section_analysis(section, section_size) + "\n"
 
     print(result)
 
@@ -26,7 +28,7 @@ def split_file_to_sections(path: str, section_size: int):
                 sections.append(cur_section)
                 cur_section = ""
 
-    if cur_section is not "":
+    if cur_section != "":
         sections.append(cur_section)
 
     return sections
@@ -35,7 +37,7 @@ def split_file_to_sections(path: str, section_size: int):
 def section_analysis(section: str, section_size: int):
     messages = [
         {"role": "user", "content": "总结段落文字的要点，要有一定的核心细节，字数控制在" +
-            section_size + "字以内，并且不要回复任何与该段文字无关的内容，段落文字为：```" + section+"```"}
+            str(section_size) + "字以内，并且不要回复任何与该段文字无关的内容，段落文字为：```" + section+"```"}
     ]
     response = openai.ChatCompletion.create(
         model="gpt-3.5-turbo-16k-0613",
