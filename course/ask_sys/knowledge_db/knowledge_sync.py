@@ -1,4 +1,4 @@
-import knowledge_db
+from . import knowledge_db
 
 
 # 数据同步，实际业务场景中，可以启动定时器等定时去业务数据库中同步数据
