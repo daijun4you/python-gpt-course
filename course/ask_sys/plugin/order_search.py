@@ -12,7 +12,4 @@ class OrderSearch(plugin.Plugin):
 
     def run(self, param: dict):
         # 这里简单演示，实际场景中，可以替换成从业务数据库中获取
-        return {
-            "order_id": param["order_id"],
-            "info": "猫粮"
-        }
+        return "订单信息：进口优质猫粮"

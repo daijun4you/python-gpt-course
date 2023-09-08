@@ -1,88 +1,86 @@
-from ask_sys.base import prompt
+from ask_sys.base import prompt, msg
 from ask_sys.plugin import ability_math, order_search, suggested_record
 from ask_sys.knowledge_db import knowledge_db
 import json
 import openai
 from configs import conf
 
+sys_prompt = prompt.SysPrompt()
+kdb = knowledge_db.KnowledgeDB()
+msg = msg.Msg()
+
 openai.api_key = conf.get("api_key")
 
 
 def run():
-    # ----------------- 初始化 -----------------
-    sysPrompt = prompt.SysPrompt()
-    init_plugin(sysPrompt)
-    kdb = knowledge_db.KnowledgeDB()
+    init_plugin()
 
-    print(sysPrompt.encode())
-
-    # 将SysPrompt放入msg中
-    msgs = [
-        {"role": "system", "content": sysPrompt.encode()},
-    ]
+    msg.set_sys_msg(sys_prompt.encode())
 
     # 模拟用户输入，实际场景中，往往会从Http请求中获取
-    user_prompt = mock_user_prompt_ask_company_culture()
+    user_prompt = mock_user_prompt_search_order()
     # 查询知识库
     result = kdb.search(user_prompt)
+
     knowledge = ""
     # 如果知识库查出内容，可将内容放入上下文
     if len(result["documents"]) > 0:
         knowledge = json.dumps(result["documents"])
 
     # 用户prompt加入上下文
-    msgs.append({"role": "user", "content": sysPrompt.build_user_prompt(
-        user_prompt=user_prompt, knowledge=knowledge)})
-
-    print(msgs)
+    msg.add_user_msg(sys_prompt.build_knowledge_prompt(
+        user_prompt=user_prompt, knowledge=knowledge))
 
     # 与GPT交互
+    gpt_msg = request_gpt()
+
+    # 系统回复加入上下文
+    msg.add_gpt_reponse(gpt_msg.content)
+
+    # 处理GPT响应，并兼容gpt返回的不稳定性
+    response = json.loads(gpt_msg.content)
+    if response.get("response") is not None:
+        response = response.get("response")
+
+    if not isinstance(response, dict):
+        print(response)
+    elif response.get("normal") is not None:
+        print(response["normal"])
+    else:
+        call_plugin(response, user_prompt=user_prompt)
+
+
+def call_plugin(response, user_prompt):
+    plugins = sys_prompt.get_plugins()
+    for pluginName, plugin in plugins.items():
+        if response.get(pluginName) is not None:
+            run_result = plugin.run(response.get(pluginName))
+
+            msg.set_sys_msg(sys_prompt.encode_no_plugin())
+            msg.add_user_msg(sys_prompt.build_plugin_prompt(
+                user_prompt=user_prompt, plugin_response=json.dumps(run_result)))
+
+            # print(msg.encode())
+
+            print(request_gpt().content)
+
+            break
+
+
+def request_gpt():
     chat_completion = openai.ChatCompletion.create(
         # 选择的GPT模型
         model="gpt-3.5-turbo-16k-0613",
         # 上下文
-        messages=msgs,
+        messages=msg.encode(),
         # 1.2使得GPT答复更具随机性
         temperature=0.2,
+        top_p=0.2,
         # 不采用流式输出
         stream=False,
     )
 
-    # 系统回复加入上下文
-    msgs.append(chat_completion.choices[0].message)
-
-    print(chat_completion.choices[0].message.content)
-
-    # 处理GPT响应
-    response = json.loads(
-        chat_completion.choices[0].message.content)["response"]
-    # 直接输出结果
-    if response["type"] == "normal":
-        print(response["normal"])
-    # 命中了组件
-    else:
-        plugin = sysPrompt.get_plugin(response["type"])
-        if plugin is None:
-            return
-
-        run_result = plugin.run(response[response["type"]])
-        msgs.append({
-            "role": "system",
-            "content": "调用插件结果：'''" + json.dumps(run_result) + "'''"
-        })
-
-        chat_completion = openai.ChatCompletion.create(
-            # 选择的GPT模型
-            model="gpt-3.5-turbo-16k-0613",
-            # 上下文
-            messages=msgs,
-            # 1.2使得GPT答复更具随机性
-            temperature=0.2,
-            # 不采用流式输出
-            stream=False,
-        )
-
-        print(chat_completion.choices[0].message.content)
+    return chat_completion.choices[0].message
 
 
 def mock_user_prompt_search_order():
@@ -90,11 +88,11 @@ def mock_user_prompt_search_order():
 
 
 def mock_user_prompt_ask_company_culture():
-    return "咱公司有啥企业文化？"
+    return "咱公司有啥企业文化？以及上班时间呢？"
 
 
 # 初始化插件
-def init_plugin(p: prompt.SysPrompt):
-    p.add_plugin(ability_math.Math())
-    p.add_plugin(order_search.OrderSearch())
-    # p.add_plugin(suggested_record.SuggestedRecord())
+def init_plugin():
+    sys_prompt.add_plugin(ability_math.Math())
+    sys_prompt.add_plugin(order_search.OrderSearch())
+    sys_prompt.add_plugin(suggested_record.SuggestedRecord())
