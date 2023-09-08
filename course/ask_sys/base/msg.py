@@ -1,3 +1,4 @@
+# 简易的对openai的messages进行封装
 class Msg:
     def __init__(self) -> None:
         self.msgs = []

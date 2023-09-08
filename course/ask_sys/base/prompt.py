@@ -41,6 +41,7 @@ class SysPrompt:
         self.index = 100
         self.plugins = {}
 
+    # 追加插件
     def add_plugin(self, p: plugin.Plugin):
         plugin_name = p.__class__.__name__
 
@@ -58,18 +59,11 @@ class SysPrompt:
     def get_plugins(self):
         return self.plugins
 
-    def build_knowledge_prompt(self, user_prompt: str, knowledge="") -> str:
+    # 构建用户prompt，这里会参考上边的Prompt编程所定义的
+    def build_prompt(self, user_prompt: str, knowledge="") -> str:
         return "/回答 " + json.dumps({
             "request": {
                 "背景知识": knowledge,
-                "用户输入": user_prompt
-            }
-        })
-
-    def build_plugin_prompt(self, user_prompt: str, plugin_response="") -> str:
-        return "/回答 " + json.dumps({
-            "request": {
-                "背景知识": plugin_response,
                 "用户输入": user_prompt
             }
         })

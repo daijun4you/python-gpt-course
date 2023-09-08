@@ -13,6 +13,7 @@ openai.api_key = conf.get("api_key")
 
 
 def run():
+    # 初始化插件
     init_plugin()
 
     msg.set_sys_msg(sys_prompt.encode())
@@ -28,7 +29,7 @@ def run():
         knowledge = json.dumps(result["documents"])
 
     # 用户prompt加入上下文
-    msg.add_user_msg(sys_prompt.build_knowledge_prompt(
+    msg.add_user_msg(sys_prompt.build_prompt(
         user_prompt=user_prompt, knowledge=knowledge))
 
     # 与GPT交互
@@ -50,30 +51,38 @@ def run():
         call_plugin(response, user_prompt=user_prompt)
 
 
+# 根据gpt响应 进行插件调用
 def call_plugin(response, user_prompt):
     plugins = sys_prompt.get_plugins()
     for pluginName, plugin in plugins.items():
         if response.get(pluginName) is not None:
             run_result = plugin.run(response.get(pluginName))
 
+            # 为了兼容GPT-3.5的理解能力，需要暂时将SysPrompt变为无插件的版本
             msg.set_sys_msg(sys_prompt.encode_no_plugin())
+            # 去除有插件版本的聊天
             msg.remove_last(2)
-            msg.add_user_msg(sys_prompt.build_plugin_prompt(
+            msg.add_user_msg(sys_prompt.build_prompt(
                 user_prompt=user_prompt, plugin_response=json.dumps(run_result)))
 
             print(request_gpt().content)
 
+            # 恢复插件版的SysPrompt
+            msg.set_sys_msg(sys_prompt.encode())
+
             break
 
 
+# 与GPT交互
 def request_gpt():
     chat_completion = openai.ChatCompletion.create(
         # 选择的GPT模型
         model="gpt-3.5-turbo-16k-0613",
         # 上下文
         messages=msg.encode(),
-        # 1.2使得GPT答复更具随机性
+        # 0.2降低GPT回答的随机性
         temperature=0.2,
+        # 0.2降低GPT回答的随机性
         top_p=0.2,
         # 不采用流式输出
         stream=False,
