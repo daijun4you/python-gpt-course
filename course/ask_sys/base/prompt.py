@@ -23,7 +23,7 @@ class SysPrompt:
                     "前缀": "/",
                     "指令列表": {
                         "回答": "严格按照<系统 规则>进行回答",
-                        "插件响应": "严格按照<系统 规则>进行回答，但请忽略<系统 规则 100-199>"
+                        # "插件响应": "严格按照<系统 规则>进行回答，但请忽略<系统 规则 100-199>"
                     }
                 },
                 "规则": [
@@ -36,7 +36,7 @@ class SysPrompt:
             }
         }
 
-        self.no_plugin_prompt = self.prompt
+        self.no_plugin_prompt = json.dumps(self.prompt)
 
         self.index = 100
         self.plugins = {}
@@ -67,7 +67,7 @@ class SysPrompt:
         })
 
     def build_plugin_prompt(self, user_prompt: str, plugin_response="") -> str:
-        return "/插件响应 " + json.dumps({
+        return "/回答 " + json.dumps({
             "request": {
                 "背景知识": plugin_response,
                 "用户输入": user_prompt
@@ -78,4 +78,4 @@ class SysPrompt:
         return json.dumps(self.prompt)
 
     def encode_no_plugin(self) -> str:
-        return json.dumps(self.no_plugin_prompt)
+        return self.no_plugin_prompt

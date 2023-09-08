@@ -18,7 +18,7 @@ def run():
     msg.set_sys_msg(sys_prompt.encode())
 
     # 模拟用户输入，实际场景中，往往会从Http请求中获取
-    user_prompt = mock_user_prompt_search_order()
+    user_prompt = mock_user_prompt_ask_company_culture()
     # 查询知识库
     result = kdb.search(user_prompt)
 
@@ -57,10 +57,9 @@ def call_plugin(response, user_prompt):
             run_result = plugin.run(response.get(pluginName))
 
             msg.set_sys_msg(sys_prompt.encode_no_plugin())
+            msg.remove_last(2)
             msg.add_user_msg(sys_prompt.build_plugin_prompt(
                 user_prompt=user_prompt, plugin_response=json.dumps(run_result)))
-
-            # print(msg.encode())
 
             print(request_gpt().content)
 
