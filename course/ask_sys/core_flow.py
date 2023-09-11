@@ -19,7 +19,7 @@ def run():
     msg.set_sys_msg(sys_prompt.encode())
 
     # 模拟用户输入，实际场景中，往往会从Http请求中获取
-    user_prompt = mock_user_prompt_ask_company_culture()
+    user_prompt = mock_user_prompt_search_order()
     # 查询知识库
     result = kdb.search(user_prompt)
 
@@ -63,7 +63,7 @@ def call_plugin(response, user_prompt):
             # 去除有插件版本的聊天
             msg.remove_last(2)
             msg.add_user_msg(sys_prompt.build_prompt(
-                user_prompt=user_prompt, plugin_response=json.dumps(run_result)))
+                user_prompt=user_prompt, knowledge=json.dumps(run_result)))
 
             print(request_gpt().content)
 
@@ -96,7 +96,7 @@ def mock_user_prompt_search_order():
 
 
 def mock_user_prompt_ask_company_culture():
-    return "咱公司有啥企业文化？以及上班时间呢？"
+    return "咱公司有啥企业文化？"
 
 
 # 初始化插件
