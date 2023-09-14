@@ -2,3 +2,4 @@ openai
 chromadb@0.4.9
 langchain
 PyPDF2
+scikit-learn

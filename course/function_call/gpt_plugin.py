@@ -1,7 +1,6 @@
 import openai
 import json
-from . import plugin_networking
-from configs import conf
+import plugin_networking
 
 funcList = {
     "networking": plugin_networking.networking,
@@ -13,7 +12,8 @@ funcDescList = [
 
 
 def run():
-    openai.api_key = conf.get("api_key")
+    # 记得修改成你的OpenAI API Key
+    openai.api_key = "sk-xxx"
 
     messages = [
         {"role": "user", "content": "帮我阅读一下：https://github.com/Significant-Gravitas/Auto-GPT，并给我简要介绍下"}]
@@ -53,3 +53,7 @@ def run():
 
     else:
         print(response_message["content"])
+
+
+if __name__ == "__main__":
+    run()

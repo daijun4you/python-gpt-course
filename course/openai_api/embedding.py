@@ -1,9 +1,9 @@
-from configs import conf
 import openai
 
 
 def run():
-    openai.api_key = conf.get("api_key")
+   # 记得改成你的api key
+    openai.api_key = "sk-xxxxx"
 
     embedding = openai.Embedding.create(
         model="text-embedding-ada-002",
@@ -11,3 +11,7 @@ def run():
     )
 
     print(embedding['data'][0]['embedding'])
+
+
+if __name__ == "__main__":
+    run()

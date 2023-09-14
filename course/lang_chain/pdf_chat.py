@@ -4,8 +4,10 @@ from langchain.embeddings.openai import OpenAIEmbeddings
 from langchain.vectorstores import Chroma
 from langchain.chains import RetrievalQA
 from langchain.chat_models import ChatOpenAI
-from configs import conf
 import os
+
+# 记得api_key改成你的
+openai_api_key = "sk-xxxx"
 
 
 def run():
@@ -24,15 +26,15 @@ def run():
     )
     split_docs = text_splitter.split_text(pdf_content)
 
-    # 利用OpenAI进行Embedding并存储到向量数据库中
+    # 利用OpenAI进行Embedding并存储到向量数据库中，
     docsearch = Chroma.from_texts(split_docs, OpenAIEmbeddings(
-        openai_api_key=conf.get("api_key")
+        openai_api_key=openai_api_key
     ))
 
     # 创建问答Chain
     qa = RetrievalQA.from_chain_type(
         llm=ChatOpenAI(
-            openai_api_key=conf.get("api_key"),
+            openai_api_key=openai_api_key,
             model_name="gpt-3.5-turbo-16k-0613"
         ),
         chain_type="stuff",
@@ -42,3 +44,7 @@ def run():
     result = qa({"query": "什么瓜不能吃"})
 
     print(result)
+
+
+if __name__ == "__main__":
+    run()

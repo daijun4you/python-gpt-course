@@ -1,10 +1,10 @@
-from configs import conf
 import openai
 from sklearn.metrics.pairwise import cosine_similarity
 
 
 def run():
-    openai.api_key = conf.get("api_key")
+    # 记得改成你的api key
+    openai.api_key = "sk-xxxxx"
 
     good_text = "这是一条好评"
     bad_text = "这是一条差评"
@@ -33,3 +33,7 @@ def run():
         print("这是一条好评")
     else:
         print("这是一条差评")
+
+
+if __name__ == "__main__":
+    run()

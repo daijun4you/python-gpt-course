@@ -1,4 +1,3 @@
-from configs import conf
 import openai
 
 contextMessages = [
@@ -9,7 +8,8 @@ contextMessages = [
 
 
 def run():
-    openai.api_key = conf.get("api_key")
+    # 记得改成你的api key
+    openai.api_key = "sk-xxxxx"
 
     print("\r 请输入\"/出题\"获取题目", flush=True)
 
@@ -48,3 +48,7 @@ def reqGPTAndSaveContext():
     contextMessages.append(chat_completion.choices[0].message)
 
     return chat_completion.choices[0].message.content
+
+
+if __name__ == "__main__":
+    run()

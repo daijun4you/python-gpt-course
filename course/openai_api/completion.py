@@ -1,9 +1,9 @@
-from configs import conf
 import openai
 
 
 def run():
-    openai.api_key = conf.get("api_key")
+    # 记得改成你的api key
+    openai.api_key = "sk-xxxxx"
 
     completion = openai.Completion.create(
         # 选择的GPT模型
@@ -23,3 +23,7 @@ def run():
     )
 
     print(completion.choices[0].text)
+
+
+if __name__ == "__main__":
+    run()

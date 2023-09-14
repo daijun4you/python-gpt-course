@@ -1,4 +1,3 @@
-from configs import conf
 import openai
 
 contextMessages = [
@@ -10,7 +9,8 @@ contextMessages = [
 
 
 def run():
-    openai.api_key = conf.get("api_key")
+    # 记得改成你的api key
+    openai.api_key = "sk-xxxxx"
 
     chat_completion = openai.ChatCompletion.create(
         # 选择的GPT模型
@@ -32,3 +32,7 @@ def run():
 
     # 将答复存储到上下文中，否则下次再进行对话时，GPT会遗忘之前的答复
     contextMessages.append(chat_completion.choices[0].message)
+
+
+if __name__ == "__main__":
+    run()
