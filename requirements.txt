@@ -1,4 +1,4 @@
-openai
+openai@0.28
 chromadb@0.4.9
 langchain
 PyPDF2
